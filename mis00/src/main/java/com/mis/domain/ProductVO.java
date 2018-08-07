@@ -1,4 +1,4 @@
-package com.mis.domein;
+package com.mis.domain;
 
 public class ProductVO {
 

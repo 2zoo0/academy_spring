@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mis.domein.ProductVO;
+import com.mis.domain.ProductVO;
 
 @Controller
 public class SampleControllerPd {
@@ -16,7 +16,7 @@ public class SampleControllerPd {
 		
 	@RequestMapping("doPD")
 	public String doPD(Model model) {
-		ProductVO vo = new ProductVO("청바지", 10000, 100, 20);
+		ProductVO vo = new ProductVO("청바지", 10000/*, 100, 20*/);
 		logger.info("doPD 불렀당~~~~~~");
 		
 		model.addAttribute("product", vo);

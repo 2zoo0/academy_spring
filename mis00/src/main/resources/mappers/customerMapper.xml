@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mapper.customerMapper">
+
+	<insert id="insertCustomer">
+		insert into customer (userid, name, birthyear, address, phone, grade)
+		values (#{userid}, #{name}, #{birthyear}, #{address}, #{phone}, #{grade})
+	</insert>
+	
+	<select id="readCustomer" resultType="com.mis.domain.CustomerVO">
+		select *
+		  from customer
+		 where userid = #{userid}
+	</select>
+	
+	<update id="updateCustomer">
+		update customer 
+		   set name = #{name} , birthyear = #{birthyear} , address = #{address} , phone = #{phone}, grade = #{grade}, moddate = sysdate
+		 where userid = #{userid}
+	</update>
+	
+	<delete id="deleteCustomer">
+		delete from customer 
+		 where userid = #{userid}
+	</delete>
+	
+</mapper>
