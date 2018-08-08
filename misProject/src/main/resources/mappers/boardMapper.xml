@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.ProductMapper">
+   
+   <insert id="create">
+      INSERT INTO tbl_board (bno, title, content, writer)
+      VALUES (seq_board.nextval, #{title}, #{content}, #{writer})
+   </insert>
+   
+   <select id="read" resultType="com.mis.domain.BoardVO">
+      SELECT b.bno
+           , b.title
+           , b.content
+           , b.writer
+           , b.regdate
+           , b.viewcnt
+        FROM tbl_board b
+       WHERE b.bno = #{bno}
+   </select>
+   
+   <update id="update">
+      UPDATE tbl_board b
+         SET b.title = #{title}
+           , b.content = #{content}
+           , b.writer = #{writer}
+       WHERE b.bno = #{bno}
+   </update>
+   
+   <delete id="delete">
+      DELETE FROM tbl_board b
+        WHERE b.bno = #{bno}
+   </delete>
+   
+   <select id="listAll" resultType="com.mis.domain.BoardVO">
+      <![CDATA[
+      SELECT b.bno
+          , b.title
+          , b.content
+          , b.writer
+          , b.regdate
+          , b.viewcnt
+        FROM tbl_board b
+       WHERE b.bno > 0
+       ORDER BY b.bno DESC
+      ]]>
+   </select>
+   
+   <update id="updateViewCnt">
+      UPDATE tbl_board b
+         SET b.viewcnt = b.viewcnt + 1
+       WHERE b.bno = #{bno}
+   </update>
+   
+   <select id="listPage" resultType="com.mis.domain.BoardVO">
+   <![CDATA[
+      SELECT b.*
+        FROM ( b.bno, b.title, b.content, b.writer, b.regdate, b.viewcnt
+               FROM tbl_board b
+                WHERE b.bno > 0 
+                ORDER BY bno DESC) b
+       WHERE rownum <= #{page}
+       ORDER BY b.bno DESC, b.regdate DESC 
+   ]]>
+   </select>
+   
+   <select id="listCriteria" resultType="com.mis.domain.BoardVO">
+   <![CDATA[
+      SELECT b.*
+        FROM (SELECT rownum as rnum
+                  , b.bno
+                  , b.title
+                  , b.content
+                  , b.writer
+                  , b.regdate
+                  , b.viewcnt
+                 FROM tbl_board b
+                WHERE b.bno > 0
+                ORDER BY bno DESC) b
+       WHERE (b.rnum >= #{pageStart} AND b.rnum <= #{pageEnd})
+       ORDER BY b.bno DESC
+   ]]>
+   </select>
+   
+   <select id="countPaging" resultType="int">
+   <![CDATA[
+      SELECT COUNT(bno)
+        FROM tbl_board b
+       WHERE b.bno > 0
+   ]]>
+   </select>
+   
+   <sql id="search">
+      <if test="searchType != null">
+         <if test="searchType == 't'.toString()">
+            AND title LIKE '%' || #{keyword} || '%'
+         </if>
+         <if test="searchType == 'c'.toString()">
+            AND content LIKE '%' || #{keyword} || '%'
+         </if>
+         <if test="searchType == 'w'.toString()">
+            AND writer LIKE '%' || #{keyword} || '%'
+         </if>
+         <if test="searchType == 'tc'.toString()">
+            AND (title   LIKE '%' || #{keyword} || '%'
+             OR content  LIKE '%' || #{keyword} || '%')
+         </if>
+         <if test="searchType == 'cw'.toString()">
+            AND (title   LIKE '%' || #{keyword} || '%'
+             OR  writer  LIKE '%' || #{keyword} || '%')
+         </if>
+         <if test="searchType == 'twc'.toString()">
+            AND (title   LIKE '%' || #{keyword} || '%'
+             OR  content LIKE '%' || #{keyword} || '%'
+             OR  writer  LIKE '%' || #{keyword} || '%')
+         </if>
+      </if>
+   </sql>
+   
+   <select id="listSearch" resultType="com.mis.domain.BoardVO">
+      <![CDATA[
+         SELECT b.*
+           FROM (SELECT rownum as rnum
+                       , bno
+                       , title
+                       , content
+                       , writer
+                       , regdate
+                       , viewcnt
+                   FROM tbl_board
+                  WHERE bno > 0
+      ]]>
+      
+      <include refid="search"></include>
+      
+      <![CDATA[
+         ORDER BY bno DESC) b
+         WHERE (rnum >= #{pageStart} AND rnum <= #{pageEnd})
+         ORDER BY bno DESC
+      ]]>
+   </select>
+   
+   <select id="listSearchCount" resultType="int">
+      <![CDATA[
+         SELECT COUNT(bno)
+           FROM tbl_board
+          WEHRE bno > 0
+      ]]>
+      
+      <include refid="search"></include>
+   </select>
+</mapper>
